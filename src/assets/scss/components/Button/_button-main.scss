@@ -1,0 +1,8 @@
+
+.pk-button {
+  @include rem(padding, 6px 20px !important);
+  @include rem(font-size, 15px !important);
+  @include rem(border-radius, 30px !important);
+  @include font-weight(semi-bold !important);
+  text-transform: none !important;
+}

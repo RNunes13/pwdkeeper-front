@@ -1,0 +1,19 @@
+/**
+ * Screen Sizes
+ */
+$screen-xs : 490px !default;
+$screen-sm : 576px !default;
+$screen-md : 768px !default;
+$screen-lg : 992px !default;
+$screen-xl : 1200px !default;
+
+/**
+ * Breakpoints - Media Queries
+ */
+$breakpoints: (
+  'xs': $screen-xs,
+  'sm': $screen-sm,
+  'md': $screen-md,
+  'lg': $screen-lg,
+  'xl': $screen-xl
+);

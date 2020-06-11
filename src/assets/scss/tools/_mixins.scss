@@ -1,0 +1,240 @@
+
+@import './../settings/_screen-sizes';
+
+/** 
+ * Media Queries
+ * Mobile First
+ */
+@mixin mq($width, $type: min) {
+  @if map_has_key($breakpoints, $width) {
+    $width: map_get($breakpoints, $width);
+  }
+
+  @if $type == max {
+    $width: $width - 1px;
+  }
+
+  @media only screen and (#{$type}-width: $width) {
+    @content;
+  }
+}
+
+/**
+ * Font Weight
+ */
+@mixin font-weight($weight) {
+  $output: $weight;
+
+  @if map-has-key($weights, $weight) {
+    $output: map-get($weights, $weight);
+  }
+
+  font-weight: $output;
+}
+
+/**
+ * Resets
+ */
+@mixin reset-link {
+  text-decoration: inherit;
+  color: inherit;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+@mixin reset-media {
+  max-width: 100%;
+  height: auto;
+  -ms-interpolation-mode: bicubic;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@mixin reset-list {
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+@mixin reset-button {
+  overflow: visible; // Shrinkwrap the text in IE7-
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit; // Inherit font settings (doesn’t work in IE7-)
+  line-height: normal; // Override line-height to avoid spacing issues
+  cursor: pointer; // Buttons don’t make the cursor change in all browsers
+  -moz-user-select: text; // Make button text selectable in Gecko
+}
+
+@mixin button-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+
+  @include mq('sm', max) {
+      pointer-events: none;
+  }
+}
+
+/**
+ * Headings
+ */
+@mixin headings($from: 1, $to: 6) {
+  @for $i from $from through $to {
+    h#{$i} {
+      @content;
+    }
+  }
+}
+
+@mixin absolute-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin fixed-centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-backface-visibility: hidden;
+  transform: translate(-50%, -50%) translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+@mixin flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/**
+ * Custom default browser scrollbar
+ */
+ @mixin scrollbar($size, $primary, $secondary: transparent) {
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary, 0.2);
+    border-radius: 5px;
+
+    &:hover {
+      background: $primary;
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $secondary;
+  }
+
+  // For Internet Explorer
+  body & {
+    scrollbar-face-color: $primary;
+    scrollbar-track-color: $secondary;
+  }
+}
+
+@mixin breakpoint($point, $value: 0) {
+  @if $point == mobile {
+    @media only screen
+    and (min-width : 100px)
+    and (max-width: 1080px)
+    {
+      @content;
+    }
+  }
+
+  @else if $point == tablet {
+    @media only screen
+    and (min-width : 761px)
+    and (max-width : 1080px)
+    {
+      @content;
+    }
+  }
+
+  @else if $point == desktop {
+    @media only screen
+    and (min-width : 1081px)
+    and (max-width : 5000px)
+    {
+      @content;
+    }
+  }
+  @else if $point == bigdesktop {
+    @media only screen
+    and (min-width : 1200px)
+    and (max-width : 5000px)
+    {
+      @content;
+    }
+  }
+
+  @else if $point == notMobile {
+    @media only screen
+    and (min-width : 761px)
+    {
+      @content;
+    }
+  }
+
+  @else {
+    @media only screen
+    and ($point: $value)
+    {
+      @content;
+    }
+  }
+}
+
+@mixin between-breakpoints($min, $max) {
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin hover-supported {    
+  @media not all and (pointer: coarse) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+/**
+ * Custom input placeholders
+ */
+ @mixin placeholder($color, $opacity) {
+  &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: $color;
+    opacity: $opacity;
+  }
+
+  &::-moz-placeholder { /* Firefox 19+ */
+    color: $color;
+    opacity: $opacity;
+  }
+
+  &:-ms-input-placeholder { /* IE 10+ */
+    color: $color;
+    opacity: $opacity;
+  }
+
+  &:-moz-placeholder { /* Firefox 18- */
+    color: $color;
+    opacity: $opacity;
+  }
+}

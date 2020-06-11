@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "target": "es5",
+    "rootDir": "src",
+    "lib": [
+      "es6",
+      "dom"
+    ]
+  },
+  "include": [
+    "./typings/**/*.d.ts"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./dist"
+  ]
+}

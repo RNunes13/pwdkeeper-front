@@ -1,0 +1,38 @@
+
+/**
+ * General Variables
+ * Call on every SASS files
+ */
+
+// Base colors
+$color-body-bg: $color-white-ice !default;
+
+//Navbar
+$navbar-height-desktop : 64px;
+$navbar-height-mobile  : 56px;
+
+// Material
+$standard-ease   : cubic-bezier(0.4, 0.0, 0.2, 1);
+$accelerate-ease : cubic-bezier(0.4, 0.0, 1, 1);
+$decelerate-ease : cubic-bezier(0.0, 0.0, 0.2, 1);
+
+// Default Transition
+$transition-duration: 250ms;
+$transition-function: $accelerate-ease;
+
+// Alert Colors
+// Success
+$alert-bg-success    : $color-swans-down;
+$alert-color-success : $color-crusoe;
+// Warning
+$alert-bg-warning    : $color-china-ivory;
+$alert-color-warning : $color-golden-brown;
+// Danger
+$alert-bg-danger     : $color-pale-pink;
+$alert-color-danger  : $color-red-berry;
+// Info
+$alert-bg-info       : $color-oyster-bay;
+$alert-color-info    : $color-mosque;
+// Default
+$alert-bg-default    : $color-solitude;
+$alert-color-default : $color-baltic-sea;

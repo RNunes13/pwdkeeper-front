@@ -1,0 +1,20 @@
+
+/**
+ * Global style for app
+ */
+
+/**
+ * Common config (tools, mixins, variables, etc.)
+ */
+@import './settings/__config-base.scss';
+ 
+/**
+ * Components
+ */
+@import './components/Form/form-base';
+@import './components/Button/button-base';
+
+/**
+* Elements
+*/
+@import './elements/root';
