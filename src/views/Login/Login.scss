@@ -1,0 +1,35 @@
+
+@import '../../assets/scss/settings/_config-base';
+
+.pk-login {
+  height: 100%;
+
+  &__container {
+    @include rem(padding-top, 15px);
+    @include rem(padding-bottom, 15px);
+    @include scrollbar(5px, $color-secondary);
+    @include flex-centered;
+    min-height: 100%;
+  }
+
+  &__wrap {
+    @include rem(padding, 30px 40px);
+    @include rem(border-radius, 10px);
+    @include rem(max-width, 450px);
+    width: 100%;
+    height: auto;
+    background-color: $color-white;
+    border: 1px solid $color-light-grey;
+    transition: padding $transition-duration $transition-function;
+
+    @include mq('xs', max) {
+      @include rem(padding, 20px);
+    }
+  }
+
+  .pk-form {
+    &__info {
+      @include rem(margin, 8px 0);
+    }
+  }
+}

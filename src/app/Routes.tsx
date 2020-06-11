@@ -2,17 +2,22 @@
 import * as React from 'react';
 import qs from 'querystring';
 import Loadable from 'react-loadable';
+import { Loader } from '../components';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 // Dynamic import
-const loading = () => <div>Carregando...</div>
+const loading = () => <Loader loading />
+
+const Login = Loadable({
+  loader: () => import(/* webpackChunkName: "Login" */ '../views/Login/Login'), loading
+});
 
 /**
  * Handles redirection safely when not logged in.
  */
 const PrivateRoute = ({ component, user, ...rest }: any) => (
   <Route {...rest} render={(props: any) => {
-    if (true) {
+    if (false) {
       return React.createElement(component, { ...props });
     }
 
@@ -28,6 +33,7 @@ const PrivateRoute = ({ component, user, ...rest }: any) => (
  */
 export const MainRouter = () => (
   <Switch>
-    <Route exact path="/" component={ () => <div>Password Keeper</div> } />
+    <Route exact path="/login" component={ Login } />
+    <PrivateRoute exact path="/" component={ () => <div>Password Keeper</div> } />
   </Switch>
 );
