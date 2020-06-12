@@ -15,14 +15,10 @@ export default class Api {
     const protocol = process.env.API_PROTOCOL;
     const host = process.env.API_HOST;
     const port = process.env.API_PORT;
-
-    console.log('protocol', protocol);
-    console.log('host', host);
     
     if (!protocol || !host)  new Error('API host and protocol not found. Check the environment variables.');
     
     const baseURL = `${protocol}://${host}${port ? (':' + port) : ''}/api`;
-    console.log('baseUrl', baseURL);
 
     this.instance = axios.create({
       baseURL,

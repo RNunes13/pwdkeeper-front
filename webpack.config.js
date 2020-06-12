@@ -3,8 +3,10 @@ const Package = require('pjson')
 const webpack = require('webpack');
 const dotenv = require('dotenv').config();
 const dotenvWebpack = require('dotenv-webpack');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin  = require('uglifyjs-webpack-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 const IconfontWebpackPlugin = require('iconfont-webpack-plugin');
 
@@ -60,6 +62,35 @@ module.exports = {
       version: Package.version,
       template: path.resolve(__dirname, './src/index.html'),
       minify: true,
+    }),
+
+    /* Generates a 'manifest.json' for Progressive Web Application */
+    new WebpackPwaManifest({
+      name: 'Password Keeper',
+      short_name: 'Password Keeper',
+      description: 'Armazene e gerencie suas senhas em um único local!',
+      theme_color: '#009688',
+      background_color: '#ebeef1',
+      icons: [
+        {
+          src: path.resolve('src/assets/images/icon.png'),
+          sizes: [96, 128, 192, 256, 384, 512]
+        },
+        {
+          src: path.resolve('src/assets/images/maskable_icon.png'),
+          size: '1024x1024',
+          purpose: 'maskable'
+        }
+      ]
+    }),
+
+    /* Generates a complete service worker */
+    new WorkboxPlugin.GenerateSW({
+      // these options encourage the ServiceWorkers to get in there fast
+      // and not allow any straggling "old" SWs to hang around
+      clientsClaim: true,
+      skipWaiting: true,
+      maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
     }),
 
     /* Hot module replacement plugin */
