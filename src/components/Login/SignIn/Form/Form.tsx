@@ -2,9 +2,11 @@
 import * as React from 'react';
 import * as Yup from 'yup';
 import qs from 'querystring';
-import { withRouter, RouteComponentProps } from 'react-router';
+import { Auth } from '../../../../services';
 import { Input, Button } from '../../../index';
+import { USER_TOKEN } from '../../../../models/typings';
 import { openSnackbar } from '../../../Notifier/Notifier';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { Formik, Form as FormikForm, Field, FormikHelpers, FieldProps, ErrorMessage } from 'formik';
 
 // Material UI
@@ -13,10 +15,19 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import InputAdornment from '@material-ui/core/InputAdornment';
 
+// Redux
+import Redux, { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AppState } from '../../../../store';
+import { AuthState } from '../../../../store/auth/types';
+import * as AuthActions from '../../../../store/auth/actions';
+
 interface PropsType extends RouteComponentProps {
   showPassword: boolean;
+  auth: AuthState;
   handleShowPassword(): void;
   handleForgetPass(): void;
+  setUser: typeof AuthActions.setUser;
 };
 
 type FormType = {
@@ -24,8 +35,10 @@ type FormType = {
   password: string;
 };
 
+const authService: Auth = new Auth();
+
 const Form: React.FunctionComponent<PropsType> = (props) => {
-  const { showPassword, handleShowPassword, handleForgetPass, history } = props;
+  const { showPassword, handleShowPassword, handleForgetPass, history, setUser } = props;
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
@@ -40,31 +53,41 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
     password: '',
   };
 
-  const handleSubmit = async (values: FormType, actions: FormikHelpers<FormType>) => {
+  const handleSubmit = (values: FormType, actions: FormikHelpers<FormType>) => {
     const { username, password } = values;
-    
-    // await auth.signInWithEmailAndPassword(email, password)
-    //   .then((resp) => {
-    //     openSnackbar({
-    //       message: resp.message,
-    //       variant: 'success',
-    //       delay: 2000,
-    //     });
 
-    //     const query = history.location.search.replace('?', '');
-    //     const destiny = qs.parse(query).from as string || '/dashboard';
+    openSnackbar({
+      message: 'Autenticando',
+      variant: 'info',
+      delay: 5000,
+    });
 
-    //     history.push(destiny);
-    //   })
-    //   .catch((error) => {
-    //     openSnackbar({
-    //       message: error.message,
-    //       variant: 'error',
-    //       delay: 10000,
-    //     });
-    //   });
+    authService.signIn(username, password)
+      .then((user) => {
+        openSnackbar({
+          message: 'Login aceito',
+          variant: 'success',
+          delay: 2000,
+        });
 
-    actions.setSubmitting(false);
+        window.localStorage.setItem(USER_TOKEN, user.token);
+        setUser(user);
+
+        const query = history.location.search.replace('?', '');
+        const destiny = qs.parse(query).from as string || '/dashboard';
+
+        setTimeout(() => history.push(destiny), 500);
+      })
+      .catch((error) => {
+        console.error(error);
+
+        openSnackbar({
+          message: 'Ocorreu um erro e não foi possível autenticar',
+          variant: 'error',
+          delay: 10000,
+        });
+      })
+      .finally(() => actions.setSubmitting(false));
   };
 
   return (
@@ -122,13 +145,13 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
               />
               <ErrorMessage className="pk-form__error" name="password" component="div" />
             </div>
-            <div className="pk-form__group" style={{ marginTop: 5, textAlign: "right" }}>
+            {/* <div className="pk-form__group" style={{ marginTop: 5, textAlign: "right" }}>
               <Button
                 color="secondary"
                 onClick={ handleForgetPass }
                 text="Esqueci minha senha"
               />
-            </div>
+            </div> */}
             <div className="pk-form__group button" style={{ marginTop: 20, textAlign: "center" }}>
               <div style={{ position: 'relative' }}>
                 <Button
@@ -148,4 +171,17 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
   );
 };
 
-export default withRouter(Form);
+
+const mapStateToProps = (state: AppState) => ({
+  auth: state.auth,
+});
+
+const mapDispatchToProps = (dispatch: Redux.Dispatch) =>
+  bindActionCreators({
+    ...AuthActions,
+  }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withRouter(Form));

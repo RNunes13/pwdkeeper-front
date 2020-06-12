@@ -15,9 +15,9 @@ const Login = Loadable({
 /**
  * Handles redirection safely when not logged in.
  */
-const PrivateRoute = ({ component, user, ...rest }: any) => (
+const PrivateRoute = ({ component, userIsLogged, ...rest }: any) => (
   <Route {...rest} render={(props: any) => {
-    if (false) {
+    if (userIsLogged) {
       return React.createElement(component, { ...props });
     }
 
@@ -31,9 +31,13 @@ const PrivateRoute = ({ component, user, ...rest }: any) => (
 /**
  * The main application router.
  */
-export const MainRouter = () => (
+interface MainRouterProps {
+  userIsLogged: boolean;
+}
+
+export const MainRouter = ({ userIsLogged }: MainRouterProps) => (
   <Switch>
     <Route exact path="/login" component={ Login } />
-    <PrivateRoute exact path="/" component={ () => <div>Password Keeper</div> } />
+    <PrivateRoute exact userIsLogged={ userIsLogged } path="/" component={ () => <div>Password Keeper</div> } />
   </Switch>
 );

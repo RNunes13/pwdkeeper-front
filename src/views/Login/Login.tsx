@@ -5,14 +5,20 @@ import { RouteComponentProps } from 'react-router';
 import { Container, SignIn, LoginHeading, SignUp } from '../../components';
 import './Login.scss';
 
+// Redux
+import { connect } from 'react-redux';
+import { AppState } from '../../store';
+import { AuthState } from '../../store/auth/types';
+
 interface LoginProps extends RouteComponentProps {
+  auth: AuthState;
 };
 
 interface LoginState {
   showSignUp: boolean;
 };
 
-export default class Login extends React.Component<LoginProps, LoginState> {
+class Login extends React.Component<LoginProps, LoginState> {
   constructor(props: LoginProps) {
     super(props);
 
@@ -29,9 +35,9 @@ export default class Login extends React.Component<LoginProps, LoginState> {
 
   componentDidMount() {
     const query = this.props.location!.search.replace('?', '');  
-    const destiny = qs.parse(query).from as string || '/dashboard';
+    const destiny = qs.parse(query).from as string || '/';
 
-    // if (auth.currentUser()) this.props.history.push(destiny);
+    if (this.props.auth.user) this.props.history.push(destiny);
   }
 
   render() {
@@ -51,3 +57,9 @@ export default class Login extends React.Component<LoginProps, LoginState> {
     );
   }
 }
+
+const mapStateToProps = (state: AppState) => ({ auth: state.auth });
+
+export default connect(
+  mapStateToProps,
+)(Login);
