@@ -74,7 +74,7 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
         setUser(user);
 
         const query = history.location.search.replace('?', '');
-        const destiny = qs.parse(query).from as string || '/dashboard';
+        const destiny = qs.parse(query).from as string || '/';
 
         setTimeout(() => history.push(destiny), 500);
       })
@@ -84,7 +84,7 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
         openSnackbar({
           message: 'Ocorreu um erro e não foi possível autenticar',
           variant: 'error',
-          delay: 10000,
+          delay: 5000,
         });
       })
       .finally(() => actions.setSubmitting(false));
@@ -170,7 +170,6 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
     </>
   );
 };
-
 
 const mapStateToProps = (state: AppState) => ({
   auth: state.auth,
