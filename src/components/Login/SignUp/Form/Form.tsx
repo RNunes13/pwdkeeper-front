@@ -2,10 +2,12 @@
 import * as React from 'react';
 import * as Yup from 'yup';
 import qs from 'querystring';
+import { Auth } from '../../../../services';
 import { Input, Button } from '../../../index';
-import { Formik, Form as FormikForm, FormikHelpers, Field, FieldProps, ErrorMessage } from 'formik';
+import { USER_TOKEN } from '../../../../models/typings';
 import { openSnackbar } from '../../../Notifier/Notifier';
 import { withRouter, RouteComponentProps } from 'react-router';
+import { Formik, Form as FormikForm, FormikHelpers, Field, FieldProps, ErrorMessage } from 'formik';
 
 // Material UI
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -15,10 +17,19 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 
+// Redux
+import Redux, { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { AppState } from '../../../../store';
+import { AuthState } from '../../../../store/auth/types';
+import * as AuthActions from '../../../../store/auth/actions';
+
 interface PropsType extends RouteComponentProps {
+  auth: AuthState,
   showPassword: boolean;
   handleShowPassword(): void;
   handleSignUp(): void;
+  setUser: typeof AuthActions.setUser;
 };
 
 type FormType = {
@@ -28,10 +39,16 @@ type FormType = {
   password: string;
 };
 
+const authService: Auth = new Auth();
+
 const Form: React.FunctionComponent<PropsType> = (props) => {
-  const { showPassword, handleShowPassword, handleSignUp, history } = props;
+  const { showPassword, handleShowPassword, handleSignUp, history, setUser } = props;
 
   const [ showTooltip, handleTooltipState ] = React.useState(false);
+  const [ checkingEmail, setCheckingEmail ] = React.useState(false);
+  const [ emailAvailable, setEmailAvailable ] = React.useState(true);
+  const [ checkingUsername, setCheckingUsername ] = React.useState(false);
+  const [ usernameAvailable, setUsernameAvailable ] = React.useState(true);
 
   const handleTooltip = (open: boolean) => () => handleTooltipState(open);
   
@@ -75,32 +92,100 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
   };
 
   const handleSubmit = async (values: FormType, actions: FormikHelpers<FormType>) => {
-    const { name, email, username, password } = values;
+    if (!usernameAvailable) {
+      openSnackbar({
+        message: 'Usuário já está em uso',
+        variant: 'warning',
+        delay: 5000,
+      });
 
-    // await auth.signUpWithEmailAndPassword(email, password.trim(), name)
-    //   .then((resp) => {
-    //     openSnackbar({
-    //       message: resp.message,
-    //       variant: 'success',
-    //       delay: 2000,
-    //     });
-    //     actions.resetForm();
-        
-    //     const query = history.location.search.replace('?', '');
-    //     const destiny = qs.parse(query).from as string || '/dashboard';
+      actions.setSubmitting(false)
+      return;
+    }
 
-    //     history.push(destiny);
-    //   })
-    //   .catch((error) => {
-    //     openSnackbar({
-    //       message: error.message,
-    //       variant: 'error',
-    //       delay: 10000,
-    //     });
-    //   });
+    if (!emailAvailable) {
+      openSnackbar({
+        message: 'Email já está em uso',
+        variant: 'warning',
+        delay: 5000,
+      });
 
-    actions.setSubmitting(false);
+      actions.setSubmitting(false)
+      return;
+    }
+
+    openSnackbar({
+      message: 'Realizando o cadastro',
+      variant: 'info',
+      delay: 5000,
+    });
+
+    authService.signUp(values)
+      .then((user) => {
+        openSnackbar({
+          message: 'Cadastro realizado!',
+          variant: 'success',
+          delay: 3000,
+        });
+
+        window.localStorage.setItem(USER_TOKEN, user.token);
+        setUser(user);
+
+        const query = history.location.search.replace('?', '');
+        const destiny = qs.parse(query).from as string || '/';
+
+        setTimeout(() => history.push(destiny), 500);
+      })
+      .catch((error) => {
+        console.error(error);
+
+        openSnackbar({
+          message: 'Ocorreu um erro e não foi possível cadastrar',
+          variant: 'error',
+          delay: 5000,
+        });
+      })
+      .finally(() => actions.setSubmitting(false));
   };
+
+  const checkAvailability = async (field: 'email' | 'username', value: string) => {
+    if (!value) return;
+    
+    try {
+      if (field === 'email') {
+        setCheckingEmail(true);
+        const available = await authService.checkEmailAvailability(value);
+
+        setEmailAvailable(available);
+
+        if (!available) {
+          openSnackbar({
+            message: 'Email já está em uso',
+            variant: 'warning',
+            delay: 5000,
+          });
+        }
+      } else if (field === 'username') {
+        setCheckingUsername(true);
+        const available = await authService.checkUsernameAvailability(value);
+        
+        setUsernameAvailable(available);
+
+        if (!available) {
+          openSnackbar({
+            message: 'Usuário já está em uso',
+            variant: 'warning',
+            delay: 5000,
+          });
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setCheckingEmail(false);
+      setCheckingUsername(false);
+    }
+  }
 
   return (
     <>
@@ -143,8 +228,13 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
                     fieldProps={ props }
                     error={ errors.username }
                     touched={ touched.username }
+                    disabled={ checkingUsername }
                     inputProps={{ maxLength: 100 }}
                     placeholder="Qual será seu usuário?"
+                    onBlur={ (e) => {
+                      props.field.onBlur(e);
+                      checkAvailability('username', values.username);
+                    }}
                   />
                 }
               />
@@ -162,7 +252,12 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
                     fieldProps={ props }
                     error={ errors.email }
                     touched={ touched.email }
+                    disabled={ checkingEmail }
                     placeholder="Onde podemos entrar em contato?"
+                    onBlur={ (e) => {
+                      props.field.onBlur(e);
+                      checkAvailability('email', values.email);
+                    }}
                   />
                 }
               />
@@ -222,10 +317,10 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
                 variant="contained"
                 color="primary"
                 text="Cadastrar"
-                style={{ marginRight: 10 }}
                 onClick={ submitForm }
-                disabled={ isSubmitting }
+                style={{ marginRight: 10 }}
                 loading={ isSubmitting }
+                disabled={ isSubmitting || checkingEmail || checkingUsername }
               />
               <Button
                 color="secondary"
@@ -241,4 +336,16 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
   );
 };
 
-export default withRouter(Form);
+const mapStateToProps = (state: AppState) => ({
+  auth: state.auth,
+});
+
+const mapDispatchToProps = (dispatch: Redux.Dispatch) =>
+  bindActionCreators({
+    ...AuthActions,
+  }, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withRouter(Form));

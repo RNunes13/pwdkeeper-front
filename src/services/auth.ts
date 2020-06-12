@@ -42,11 +42,48 @@ export class Auth {
         };
   
         const resp = await this.api.post('/sign-in', data);
+
+        const respData = resp.data;
+
+        if (!respData.success) throw respData.error;
   
         resolve(resp.data.data);
       } catch (e) {
         reject(e);
       }
+    });
+  }
+
+  public signUp(params: {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const resp = await this.api.post('/sign-up', params);
+
+        resolve(resp.data);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  public checkUsernameAvailability(username: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.api.post('/username-availability', { username })
+        .then((resp) => resolve(resp.data))
+        .catch(() => resolve(true));
+    });
+  }
+
+  public checkEmailAvailability(email: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.api.post('/email-availability', { email })
+        .then((resp) => resolve(resp.data))
+        .catch(() => resolve(true));
     });
   }
 }

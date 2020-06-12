@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import qs from 'querystring';
 import { Auth } from '../../../../services';
 import { Input, Button } from '../../../index';
+import { HandlerError } from '../../../../utils';
 import { USER_TOKEN } from '../../../../models/typings';
 import { openSnackbar } from '../../../Notifier/Notifier';
 import { withRouter, RouteComponentProps } from 'react-router';
@@ -74,17 +75,17 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
         setUser(user);
 
         const query = history.location.search.replace('?', '');
-        const destiny = qs.parse(query).from as string || '/dashboard';
+        const destiny = qs.parse(query).from as string || '/';
 
         setTimeout(() => history.push(destiny), 500);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((err) => {
+        const message = HandlerError.getErrorMessage(err || {});
 
         openSnackbar({
-          message: 'Ocorreu um erro e não foi possível autenticar',
+          message: message || 'Ocorreu um erro e não foi possível autenticar',
           variant: 'error',
-          delay: 10000,
+          delay: 5000,
         });
       })
       .finally(() => actions.setSubmitting(false));
@@ -170,7 +171,6 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
     </>
   );
 };
-
 
 const mapStateToProps = (state: AppState) => ({
   auth: state.auth,
