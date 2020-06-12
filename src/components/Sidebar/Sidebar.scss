@@ -1,0 +1,29 @@
+
+@import '../../assets/scss/settings/_config-base';
+
+.pk-sidebar {
+  &__heading {
+    background-image: linear-gradient(to bottom, $color-secondary, transparent);
+
+    &--close {
+      @include rem(margin, 5px !important);
+      color: $color-white !important;
+      float: right;
+    }
+
+    &--image {
+      @include rem(padding, 50px);
+      text-align: center;
+
+      &-icon {
+        @include rem(margin-bottom, 20px);
+        @include rem(max-width, 80px);
+      }
+
+      &-name {
+        @include rem(max-height, 15px);
+        display: block;
+      }
+    }
+  }
+}
