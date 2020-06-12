@@ -129,6 +129,7 @@ module.exports = {
   
               return '[contenthash].[ext]';
             },
+            esModule: false,
           },
         }]
       },

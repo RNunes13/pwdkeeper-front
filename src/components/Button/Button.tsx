@@ -11,31 +11,34 @@ interface ButtonProps {
   loading?: boolean;
 }
 
-const Button: React.FunctionComponent<ButtonProps & ButtonUIProps> = ({
-  text,
-  loading,
-  className,
-  ...props
-}) => {  
-  return (
-    <div style={{ position: 'relative', display: 'inline' }}>
-      <ButtonUI className={ classNames('pk-button', className) } { ...props }>{ text }</ButtonUI>
-      {
-        loading &&
-        <CircularProgress
-          size={ 24 }
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            color: '#009688',
-            marginTop: -12,
-            marginLeft: -12
-          }}
-        />
-      }
-    </div>
-  );
-};
+interface ButtonState { }
 
-export default Button;
+export default class Button extends React.Component<ButtonProps & ButtonUIProps, ButtonState> {
+  constructor(props: ButtonProps) {
+    super(props);
+  }
+
+  render() { 
+    const { text, loading, className, ...props} = this.props;
+
+    return (
+      <div style={{ position: 'relative', display: 'inline' }}>
+        <ButtonUI className={ classNames('pk-button', className) } { ...props }>{ text }</ButtonUI>
+        {
+          loading &&
+          <CircularProgress
+            size={ 24 }
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              color: '#009688',
+              marginTop: -12,
+              marginLeft: -12
+            }}
+          />
+        }
+      </div>
+    )
+  }
+}
