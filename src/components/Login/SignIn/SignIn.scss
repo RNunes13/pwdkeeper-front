@@ -1,0 +1,30 @@
+
+@import '../../../assets/scss/settings/_config-base';
+
+.pk-sign-in {
+  &__register{    
+    @include rem(margin-top, 20px);
+    @include rem(padding-top, 20px);
+    border-top: 1px solid $color-whisper;
+    text-align: center;
+
+    &--text {
+      @include rem(font-size, 14px);
+      display: block;
+      color: $color-grey;
+    }
+
+    &--button {
+      @include rem(margin-top, 5px);
+      @include rem(font-size, 15px);
+      @include font-weight(semi-bold);
+      display: inline-block;
+      color: $color-primary;
+      transition: opacity $transition-duration $transition-function;
+
+      &:hover {
+        opacity: 0.65;
+      }
+    }
+  }
+}
