@@ -71,6 +71,14 @@ export class Auth {
     });
   }
 
+  public static signOut(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      window.localStorage.removeItem(USER_TOKEN);
+
+      resolve(true);
+    });
+  }
+
   public checkUsernameAvailability(username: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       this.api.post('/username-availability', { username })
