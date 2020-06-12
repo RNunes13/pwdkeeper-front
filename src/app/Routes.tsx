@@ -12,6 +12,10 @@ const Login = Loadable({
   loader: () => import(/* webpackChunkName: "Login" */ '../views/Login/Login'), loading
 });
 
+const Dashboard = Loadable({
+  loader: () => import(/* webpackChunkName: "Dashboard" */ '../views/Dashboard/Dashboard'), loading
+});
+
 /**
  * Handles redirection safely when not logged in.
  */
@@ -38,6 +42,6 @@ interface MainRouterProps {
 export const MainRouter = ({ userIsLogged }: MainRouterProps) => (
   <Switch>
     <Route exact path="/login" component={ Login } />
-    <PrivateRoute exact userIsLogged={ userIsLogged } path="/" component={ () => <div>Password Keeper</div> } />
+    <PrivateRoute exact userIsLogged={ userIsLogged } path="/" component={ Dashboard } />
   </Switch>
 );

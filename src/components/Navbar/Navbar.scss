@@ -1,0 +1,21 @@
+
+@import '../../assets/scss/settings/_config-base';
+
+.pk-navbar {
+  @include breakpoint(min-width, 600px) {
+    height: $navbar-height-desktop;
+  }
+
+  @include breakpoint(max-width, 599px) {
+    height: $navbar-height-mobile;
+  }
+
+  &__menu {
+    @include rem(margin-right, 20px !important);
+    color: $color-white !important;
+  }
+
+  &__title {
+    flex-grow: 1;
+  }
+}

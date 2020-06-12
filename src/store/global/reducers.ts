@@ -7,7 +7,7 @@ import {
 } from './types';
 
 const initialState: GlobalState = {
-  page: 'Password Keeper',
+  page: '',
   loadingData: true,
 };
 
