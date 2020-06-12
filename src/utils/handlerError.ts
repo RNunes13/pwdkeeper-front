@@ -4,14 +4,18 @@ export interface IError {
   message: string;
 }
 
+const ERROR_CODES: {[key: string]: string} = {
+  'auth/bad-body': 'Falta de informação no corpo da requisição',
+  'auth/incorrect-credentials': 'Credenciais incorretas',
+  'user/not-found': 'Usuário não encontrado',
+};
+
 export class HandlerError {
   public static getErrorMessage(error: any): string {
     if ('code' in error) {
       const { code, message } = error;
 
-      switch(code) {
-        default: return message;
-      }
+      return ERROR_CODES[code] || message;
     } else if ('message' in error) {
       const { message } = error;
 
@@ -19,7 +23,11 @@ export class HandlerError {
         default: return message;
       }
     } else {
-      return error.message ? error.message : error;
+      if (typeof error !== 'object') {
+        return error || '';
+      } else {
+        return '';
+      }
     }
   }
 }

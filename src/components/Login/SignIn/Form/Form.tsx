@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import qs from 'querystring';
 import { Auth } from '../../../../services';
 import { Input, Button } from '../../../index';
+import { HandlerError } from '../../../../utils';
 import { USER_TOKEN } from '../../../../models/typings';
 import { openSnackbar } from '../../../Notifier/Notifier';
 import { withRouter, RouteComponentProps } from 'react-router';
@@ -78,11 +79,11 @@ const Form: React.FunctionComponent<PropsType> = (props) => {
 
         setTimeout(() => history.push(destiny), 500);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((err) => {
+        const message = HandlerError.getErrorMessage(err || {});
 
         openSnackbar({
-          message: 'Ocorreu um erro e não foi possível autenticar',
+          message: message || 'Ocorreu um erro e não foi possível autenticar',
           variant: 'error',
           delay: 5000,
         });

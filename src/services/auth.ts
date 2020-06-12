@@ -42,6 +42,10 @@ export class Auth {
         };
   
         const resp = await this.api.post('/sign-in', data);
+
+        const respData = resp.data;
+
+        if (!respData.success) throw respData.error;
   
         resolve(resp.data.data);
       } catch (e) {
