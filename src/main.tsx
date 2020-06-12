@@ -2,12 +2,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import configureStore from "./store";
-import FontFaceObserver from 'fontfaceobserver';
 import WebFontLoader from 'webfontloader';
+import FontFaceObserver from 'fontfaceobserver';
 import { Provider } from "react-redux";
+import { registerServiceWorker } from './config/serviceWorker';
 
-// Views
 import App from './app/App';
+
+registerServiceWorker();
 
 const store = configureStore();
 
